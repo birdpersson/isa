@@ -16,7 +16,7 @@ public class EmailServiceImpl implements EmailService {
 
     @Autowired
     private JavaMailSender mailSender;
-      
+
 //
 //	// Izdavac tokena
 //	@Value("email-main-admin-address")
@@ -24,17 +24,17 @@ public class EmailServiceImpl implements EmailService {
 
 	
 
-    @PostConstruct
-    private void postConstruct() {
-    	EmailMessage msg = new EmailMessage();
-    	msg.setBody("test");
-    	msg.setFrom("???@gmail.com");
-    	msg.setTo("????@gmail.com");
-    	msg.setSubject("subject");
-    	sendEmail(msg);
-    	System.out.println("TEST EMAIL SENTTTTTTTTTTTTT");
-
-    }
+//    @PostConstruct
+//    private void postConstruct() {
+//    	EmailMessage msg = new EmailMessage();
+//    	msg.setBody("test");
+//    	msg.setFrom("???@gmail.com");
+//    	msg.setTo("????@gmail.com");
+//    	msg.setSubject("subject");
+//    	sendEmail(msg);
+//    	System.out.println("TEST EMAIL SENTTTTTTTTTTTTT");
+//
+//    }
 	
 	@Override
 	public void sendEmail(EmailMessage msg) {
