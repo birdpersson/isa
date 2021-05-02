@@ -55,12 +55,12 @@ public class UserServiceImpl implements UserService {
 		u.setFirstName(userRequest.getFirstname());
 		u.setLastName(userRequest.getLastname());
 
-		u.setWork_role("Admin");
+		u.setWork_role("PHADMIN");
 		u.setEnabled(true); // trebalo bi prvo false zbog sifre		
-		u.addAuthority(authService.findByname("ROLE_USER"));
-		u.addAuthority(authService.findByname("ROLE_DERMATOLOG"));
-		u.addAuthority(authService.findByname("ROLE_FARMACOLOG"));
-		u.addAuthority(authService.findByname("ROLE_ADMIN"));
+//		u.addAuthority(authService.findByname("ROLE_USER"));
+//		u.addAuthority(authService.findByname("ROLE_DERMATOLOG"));
+//		u.addAuthority(authService.findByname("ROLE_FARMACOLOG"));
+		u.addAuthority(authService.findByname("ROLE_PHADMIN"));
 		u = this.userRepository.save(u);
 		if (userRequest.getPharmacyId() != null) {
 			Pharmacy p = pharmacyService.getById(userRequest.getPharmacyId());
@@ -81,10 +81,10 @@ public class UserServiceImpl implements UserService {
 		u.setFirstName(userRequest.getFirstname());
 		u.setLastName(userRequest.getLastname());
 		u.setEnabled(false);
-		u.setWork_role("Pacient");
+		u.setWork_role("PATIENT");
 		//TODO: expand user model (addr, city, token, role)
 
-		u.addAuthority(authService.findByname("ROLE_USER"));
+		u.addAuthority(authService.findByname("ROLE_PATIENT"));
 
 		u = this.userRepository.save(u);
 		return u;
