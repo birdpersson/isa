@@ -1,48 +1,38 @@
 package pharmacy.security;
 
-import java.util.Date;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 import pharmacy.model.entity.User;
 
-// Utility klasa za rad sa JSON Web Tokenima
+import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
+
 @Component
 public class TokenUtils {
 
-	// Izdavac tokena
-	@Value("spring-security-example")
+	@Value("isa")
 	private String APP_NAME;
 
-	// Tajna koju samo backend aplikacija treba da zna kako bi mogla da generise i proveri JWT https://jwt.io/
-	@Value("somesecret")
+	@Value("secret")
 	public String SECRET;
 
-	// Period vazenja
 	@Value("300000")
 	private int EXPIRES_IN;
 
-	// Naziv headera kroz koji ce se prosledjivati JWT u komunikaciji server-klijent
 	@Value("Authorization")
 	private String AUTH_HEADER;
 
-	// Moguce je generisati JWT za razlicite klijente (npr. web i mobilni klijenti nece imati isto trajanje JWT, JWT za mobilne klijente ce trajati duze jer se mozda aplikacija redje koristi na taj nacin)
 	private static final String AUDIENCE_UNKNOWN = "unknown";
 	private static final String AUDIENCE_WEB = "web";
 	private static final String AUDIENCE_MOBILE = "mobile";
 	private static final String AUDIENCE_TABLET = "tablet";
 
-	// Algoritam za potpisivanje JWT
 	private SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.HS512;
 
-	// Funkcija za generisanje JWT token
 	public String generateToken(String username, User user) {
 		return Jwts.builder()
 				.setIssuer(APP_NAME)
@@ -50,22 +40,13 @@ public class TokenUtils {
 				.setAudience(generateAudience())
 				.setIssuedAt(new Date())
 				.setExpiration(generateExpirationDate())
-				 .claim(PharmacyClaims.CLAIM_PHARMACY_ID, 1) //moguce je postavljanje proizvoljnih podataka u telo JWT tokena
+//				.claim(PharmacyClaims.CLAIM_PHARMACY_ID, 1)
+				.claim(PharmacyClaims.CLAIM_USER_ROLE, user.getWork_role())
 				.claim(PharmacyClaims.CLAIM_FIRST_TIME_LOGIN, user.isFirstTimeLogin())
-				 .signWith(SIGNATURE_ALGORITHM, SECRET).compact();
+				.signWith(SIGNATURE_ALGORITHM, SECRET).compact();
 	}
 
 	private String generateAudience() {
-//		Moze se iskoristiti org.springframework.mobile.device.Device objekat za odredjivanje tipa uredjaja sa kojeg je zahtev stigao.
-		
-//		String audience = AUDIENCE_UNKNOWN;
-//		if (device.isNormal()) {
-//			audience = AUDIENCE_WEB;
-//		} else if (device.isTablet()) {
-//			audience = AUDIENCE_TABLET;
-//		} else if (device.isMobile()) {
-//			audience = AUDIENCE_MOBILE;
-//		}
 		return AUDIENCE_WEB;
 	}
 
@@ -73,7 +54,6 @@ public class TokenUtils {
 		return new Date(new Date().getTime() + EXPIRES_IN);
 	}
 
-	// Funkcija za refresh JWT tokena
 	public String refreshToken(String token) {
 		String refreshedToken;
 		try {
@@ -95,12 +75,11 @@ public class TokenUtils {
 				&& (!(this.isTokenExpired(token)) || this.ignoreTokenExpiration(token)));
 	}
 
-	// Funkcija za validaciju JWT tokena
 	public Boolean validateToken(String token, UserDetails userDetails) {
 		User user = (User) userDetails;
 		final String username = getUsernameFromToken(token);
 		final Date created = getIssuedAtDateFromToken(token);
-		
+
 		return (username != null && username.equals(userDetails.getUsername())
 				&& !isCreatedBeforeLastPasswordReset(created, user.getLastPasswordResetDate()));
 	}
@@ -153,7 +132,6 @@ public class TokenUtils {
 		return EXPIRES_IN;
 	}
 
-	// Funkcija za preuzimanje JWT tokena iz zahteva
 	public String getToken(HttpServletRequest request) {
 		String authHeader = getAuthHeaderFromHeader(request);
 
@@ -169,7 +147,7 @@ public class TokenUtils {
 	public String getAuthHeaderFromHeader(HttpServletRequest request) {
 		return request.getHeader(AUTH_HEADER);
 	}
-	
+
 	private Boolean isCreatedBeforeLastPasswordReset(Date created, Date lastPasswordReset) {
 		return (lastPasswordReset != null && created.before(lastPasswordReset));
 	}
@@ -184,7 +162,6 @@ public class TokenUtils {
 		return (audience.equals(AUDIENCE_TABLET) || audience.equals(AUDIENCE_MOBILE));
 	}
 
-	// Funkcija za citanje svih podataka iz JWT tokena
 	private Claims getAllClaimsFromToken(String token) {
 		Claims claims;
 		try {

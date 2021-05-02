@@ -1,38 +1,32 @@
 package pharmacy.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.mail.MailException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
-
+import pharmacy.dto.PatientDTO;
 import pharmacy.exception.ResourceConflictException;
-import pharmacy.model.auth.UserRequest;
 import pharmacy.model.auth.UserTokenState;
 import pharmacy.model.entity.User;
 import pharmacy.security.TokenUtils;
 import pharmacy.security.auth.JwtAuthenticationRequest;
+import pharmacy.service.EmailService;
 import pharmacy.service.UserService;
 import pharmacy.service.impl.CustomUserDetailsServiceImpl;
 
-//Kontroler zaduzen za autentifikaciju korisnika
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping(value = "/auth", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AuthenticationController {
@@ -45,51 +39,59 @@ public class AuthenticationController {
 
 	@Autowired
 	private CustomUserDetailsServiceImpl userDetailsService;
-	
+
 	@Autowired
 	private UserService userService;
 
-	// Prvi endpoint koji pogadja korisnik kada se loguje.
-	// Tada zna samo svoje korisnicko ime i lozinku i to prosledjuje na backend.
+	@Autowired
+	private EmailService emailService;
+
 	@PostMapping("/login")
-	public ResponseEntity<UserTokenState> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest,
-			HttpServletResponse response) {
+	public ResponseEntity<UserTokenState> createAuthenticationToken(
+			@RequestBody JwtAuthenticationRequest authenticationRequest, HttpServletResponse response) {
 
-		// 
-		Authentication authentication = authenticationManager
-				.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(),
-						authenticationRequest.getPassword()));
+		Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+				authenticationRequest.getUsername(), authenticationRequest.getPassword()));
 
-		// Ubaci korisnika u trenutni security kontekst
-		if(authentication != null)
-			System.out.print(" it's not null");
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
-		// Kreiraj token za tog korisnika
 		User user = (User) authentication.getPrincipal();
 		String jwt = tokenUtils.generateToken(user.getUsername(), user);
 		int expiresIn = tokenUtils.getExpiredIn();
 
-		// Vrati token kao odgovor na uspesnu autentifikaciju
 		return ResponseEntity.ok(new UserTokenState(jwt, expiresIn));
 	}
 
-	// Endpoint za registraciju novog korisnika
 	@PostMapping("/signup")
-	public ResponseEntity<User> addUser(@RequestBody UserRequest userRequest, UriComponentsBuilder ucBuilder) {
+	public ResponseEntity<User> addUser(@RequestBody PatientDTO patientDTO, UriComponentsBuilder ucBuilder) {
 
-		User existUser = this.userService.findByUsername(userRequest.getUsername());
+		User existUser = this.userService.findByUsername(patientDTO.getUsername());
 		if (existUser != null) {
-			throw new ResourceConflictException(userRequest.getId(), "Username already exists");
+			throw new ResourceConflictException(existUser.getId(), "Username already exists");
 		}
 
-		User user = this.userService.save(userRequest);
+		User user = this.userService.save(patientDTO);
+		try {
+			emailService.sendToken(user);
+		} catch (MailException e) {
+			e.printStackTrace();
+		}
+
 		HttpHeaders headers = new HttpHeaders();
 		headers.setLocation(ucBuilder.path("/api/user/{userId}").buildAndExpand(user.getId()).toUri());
 		return new ResponseEntity<>(user, HttpStatus.CREATED);
 	}
 
-	// U slucaju isteka vazenja JWT tokena, endpoint koji se poziva da se token osvezi
+	@GetMapping("/verify")
+	public ResponseEntity<User> verifyUser(@RequestParam("id") String id) {
+		User existUser = userService.findById(Long.parseLong(id));
+		if (existUser == null)
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+		userService.enable(existUser);
+		return new ResponseEntity<>(existUser, HttpStatus.CREATED);
+	}
+
 	@PostMapping(value = "/refresh")
 	public ResponseEntity<UserTokenState> refreshAuthenticationToken(HttpServletRequest request) {
 
@@ -109,7 +111,7 @@ public class AuthenticationController {
 	}
 
 	@RequestMapping(value = "/change-password", method = RequestMethod.POST)
-	@PreAuthorize("hasRole('USER')")
+//	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<?> changePassword(@RequestBody PasswordChanger passwordChanger) {
 		userDetailsService.changePassword(passwordChanger.oldPassword, passwordChanger.newPassword);
 

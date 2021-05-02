@@ -1,9 +1,11 @@
 package pharmacy.service;
 
-public interface EmailService {
+import pharmacy.model.entity.User;
 
+public interface EmailService {
 
 	void sendEmail(EmailMessage message);
 
-	String getMainAdminAdress();    
+	void sendToken(User user);
+
 }
