@@ -1,83 +1,83 @@
 package pharmacy.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import pharmacy.model.auth.Authority;
+
+import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import pharmacy.model.auth.Authority;
-
 @Entity
-@Table(name="USERS")
-public class User implements UserDetails{
+@Table(name = "USERS")
+public class User implements UserDetails {
 	private static final long serialVersionUID = 1L;
 
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@Column(name = "id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Column(name = "username")
-    private String username;
+	@Column(name = "username")
+	private String username;
 
-    @JsonIgnore
-    @Column(name = "password")
-    private String password;
+	@JsonIgnore
+	@Column(name = "password")
+	private String password;
 
-    @Column(name = "first_name")
-    private String firstName;
+	@Column(name = "first_name")
+	private String firstName;
 
-    @Column(name = "last_name")
-    private String lastName;
+	@Column(name = "last_name")
+	private String lastName;
 
-    @Column(name = "email")
-    private String email;
+	@Column(name = "email")
+	private String email;
 
-    @Column(name = "enabled")
-    private boolean enabled;
+	@Column
+	private String address;
 
-    @Column(name = "last_password_reset_date")
-    private Timestamp lastPasswordResetDate;
-    
-    @Column(columnDefinition = "boolean default true")
-   	private boolean firstTimeLogin = true;
-    
-    @ManyToMany
-    private List<BusinessHours> working_hours = new ArrayList<>();
-    
-    @OneToMany
-    private List<Prescription> prescriptions = new ArrayList<>();
-    @ManyToMany    
-    @JoinTable(name = "users_work_in_pharmacies",
-    joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-    inverseJoinColumns = @JoinColumn(name = "pharmacy_id", referencedColumnName = "id"))
+	@Column
+	private String city;
+
+	@Column
+	private String country;
+
+	@Column
+	private String phone;
+
+	@Column
+	private String work_role;
+
+	@Column(name = "enabled")
+	private boolean enabled;
+
+	@Column(name = "last_password_reset_date")
+	private Timestamp lastPasswordResetDate;
+
+	@Column(columnDefinition = "boolean default true")
+	private boolean firstTimeLogin = true;
+
+	@ManyToMany
+	private List<BusinessHours> working_hours = new ArrayList<>();
+
+	@OneToMany
+	private List<Prescription> prescriptions = new ArrayList<>();
+	@ManyToMany
+	@JoinTable(name = "users_work_in_pharmacies",
+			joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+			inverseJoinColumns = @JoinColumn(name = "pharmacy_id", referencedColumnName = "id"))
 	private List<Pharmacy> pharmacy = new ArrayList<Pharmacy>();
-	
-    @JsonIgnore
-    @ManyToOne
-    private Pharmacy dedicated_pharmacy;
-    
-    public User() {
-		// TODO Auto-generated constructor stub
+
+	@JsonIgnore
+	@ManyToOne
+	private Pharmacy dedicated_pharmacy;
+
+	public User() {
 	}
 
 	public List<Pharmacy> getPharmacy() {
@@ -88,114 +88,142 @@ public class User implements UserDetails{
 		this.pharmacy = pharmacy;
 	}
 
-	private String work_role; 
-	
-	
-	
-   
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_authority",
-            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "authority_id", referencedColumnName = "id"))
-    private List<Authority> authorities = new ArrayList<>();
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "user_authority",
+			joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+			inverseJoinColumns = @JoinColumn(name = "authority_id", referencedColumnName = "id"))
+	private List<Authority> authorities = new ArrayList<>();
 
-    public void addAuthority( Authority auth) {
-    	authorities.add(auth);
-    }
-    public Long getId() {
-        return id;
-    }
+	public void addAuthority(Authority auth) {
+		authorities.add(auth);
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public String getUsername() {
-        return username;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+	public String getUsername() {
+		return username;
+	}
 
-    public String getPassword() {
-        return password;
-    }
+	public void setUsername(String username) {
+		this.username = username;
+	}
 
-    public void setPassword(String password) {
-        Timestamp now = new Timestamp(new Date().getTime());
-        this.setLastPasswordResetDate(now);
-        this.password = password;
-    }
+	public String getPassword() {
+		return password;
+	}
 
-    public String getFirstName() {
-        return firstName;
-    }
+	public void setPassword(String password) {
+		Timestamp now = new Timestamp(new Date().getTime());
+		this.setLastPasswordResetDate(now);
+		this.password = password;
+	}
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
+	public String getFirstName() {
+		return firstName;
+	}
 
-    public String getLastName() {
-        return lastName;
-    }
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
+	public String getLastName() {
+		return lastName;
+	}
 
-    public void setAuthorities(List<Authority> authorities) {
-        this.authorities = authorities;
-    }
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.authorities;
-    }
+	public void setAuthorities(List<Authority> authorities) {
+		this.authorities = authorities;
+	}
 
-    public String getEmail() {
-        return email;
-    }
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return this.authorities;
+	}
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+	public String getEmail() {
+		return email;
+	}
 
-    @Override
-    public boolean isEnabled() {
-        return enabled;
-    }
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
+	public String getAddress() {
+		return address;
+	}
 
-    public Timestamp getLastPasswordResetDate() {
-        return lastPasswordResetDate;
-    }
+	public void setAddress(String address) {
+		this.address = address;
+	}
 
-    public void setLastPasswordResetDate(Timestamp lastPasswordResetDate) {
-        this.lastPasswordResetDate = lastPasswordResetDate;
-    }
+	public String getCity() {
+		return city;
+	}
 
-    @JsonIgnore
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
+	public void setCity(String city) {
+		this.city = city;
+	}
 
-    @JsonIgnore
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
+	public String getCountry() {
+		return country;
+	}
 
-    @JsonIgnore
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public Timestamp getLastPasswordResetDate() {
+		return lastPasswordResetDate;
+	}
+
+	public void setLastPasswordResetDate(Timestamp lastPasswordResetDate) {
+		this.lastPasswordResetDate = lastPasswordResetDate;
+	}
+
+	@JsonIgnore
+	@Override
+	public boolean isAccountNonExpired() {
+		return true;
+	}
+
+	@JsonIgnore
+	@Override
+	public boolean isAccountNonLocked() {
+		return true;
+	}
+
+	@JsonIgnore
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return true;
+	}
 
 	public String getWork_role() {
 		return work_role;
@@ -237,5 +265,4 @@ public class User implements UserDetails{
 		this.firstTimeLogin = firstTimeLogin;
 	}
 
-	
 }

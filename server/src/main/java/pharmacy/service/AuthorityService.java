@@ -1,11 +1,13 @@
 package pharmacy.service;
 
-import java.util.List;
-
 import pharmacy.model.auth.Authority;
 
+import java.util.List;
+
 public interface AuthorityService {
+
 	List<Authority> findById(Long id);
-	Authority findByname(String name);
-	
+
+	List<Authority> findByName(String name);
+
 }

@@ -37,7 +37,7 @@ public class EmailServiceImpl implements EmailService {
 	@Override
 	public void sendToken(User user) throws MailException {
 		SimpleMailMessage mail = new SimpleMailMessage();
-		mail.setTo(user.getUsername());
+		mail.setTo(user.getEmail());
 		mail.setFrom(env.getProperty("spring.mail.username"));
 		mail.setSubject("Confirm registration to pharmacy");
 		mail.setText("http://localhost:8080/auth/verify?id=" + user.getId());

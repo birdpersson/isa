@@ -6,15 +6,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailException;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
+import pharmacy.dto.PatientDTO;
 import pharmacy.exception.ResourceConflictException;
-import pharmacy.model.auth.UserRequest;
 import pharmacy.model.auth.UserTokenState;
 import pharmacy.model.entity.User;
 import pharmacy.security.TokenUtils;
@@ -64,14 +63,14 @@ public class AuthenticationController {
 	}
 
 	@PostMapping("/signup")
-	public ResponseEntity<User> addUser(@RequestBody UserRequest userRequest, UriComponentsBuilder ucBuilder) {
+	public ResponseEntity<User> addUser(@RequestBody PatientDTO patientDTO, UriComponentsBuilder ucBuilder) {
 
-		User existUser = this.userService.findByUsername(userRequest.getUsername());
+		User existUser = this.userService.findByUsername(patientDTO.getUsername());
 		if (existUser != null) {
-			throw new ResourceConflictException(userRequest.getId(), "Username already exists");
+			throw new ResourceConflictException(existUser.getId(), "Username already exists");
 		}
 
-		User user = this.userService.save(userRequest);
+		User user = this.userService.save(patientDTO);
 		try {
 			emailService.sendToken(user);
 		} catch (MailException e) {

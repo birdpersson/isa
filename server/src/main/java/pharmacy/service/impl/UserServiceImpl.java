@@ -5,7 +5,9 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import pharmacy.dto.PatientDTO;
 import pharmacy.model.auth.AdminRequest;
+import pharmacy.model.auth.Authority;
 import pharmacy.model.auth.UserRequest;
 import pharmacy.model.entity.Pharmacy;
 import pharmacy.model.entity.User;
@@ -60,7 +62,7 @@ public class UserServiceImpl implements UserService {
 //		u.addAuthority(authService.findByname("ROLE_USER"));
 //		u.addAuthority(authService.findByname("ROLE_DERMATOLOG"));
 //		u.addAuthority(authService.findByname("ROLE_FARMACOLOG"));
-		u.addAuthority(authService.findByname("ROLE_PHADMIN"));
+//		u.addAuthority(authService.findByname("ROLE_PHADMIN"));
 		u = this.userRepository.save(u);
 		if (userRequest.getPharmacyId() != null) {
 			Pharmacy p = pharmacyService.getById(userRequest.getPharmacyId());
@@ -74,17 +76,22 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public User save(UserRequest userRequest) {
+	public User save(PatientDTO patientDTO) {
 		User u = new User();
-		u.setUsername(userRequest.getUsername());
-		u.setPassword(passwordEncoder.encode(userRequest.getPassword()));
-		u.setFirstName(userRequest.getFirstname());
-		u.setLastName(userRequest.getLastname());
+		u.setUsername(patientDTO.getUsername());
+		u.setPassword(passwordEncoder.encode(patientDTO.getPassword()));
+		u.setFirstName(patientDTO.getFirstname());
+		u.setLastName(patientDTO.getLastname());
+		u.setEmail(patientDTO.getEmail());
+		u.setAddress(patientDTO.getAddress());
+		u.setCity(patientDTO.getCity());
+		u.setCountry(patientDTO.getCountry());
+		u.setPhone(patientDTO.getPhone());
 		u.setEnabled(false);
 		u.setWork_role("PATIENT");
-		//TODO: expand user model (addr, city, token, role)
 
-		u.addAuthority(authService.findByname("ROLE_PATIENT"));
+		List<Authority> auth = authService.findByName("ROLE_PATIENT");
+		u.setAuthorities(auth);
 
 		u = this.userRepository.save(u);
 		return u;
