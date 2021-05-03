@@ -1,6 +1,6 @@
 package pharmacy.dto;
 
-public class PatientDTO {
+public class UserDTO {
 
 	private String username;
 	private String password;
@@ -11,6 +11,8 @@ public class PatientDTO {
 	private String city;
 	private String country;
 	private String phone;
+
+	private String role;
 
 	public String getUsername() {
 		return username;
@@ -82,6 +84,14 @@ public class PatientDTO {
 
 	public void setPhone(String phone) {
 		this.phone = phone;
+	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
 	}
 
 }

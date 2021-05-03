@@ -12,7 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
-import pharmacy.dto.PatientDTO;
+import pharmacy.dto.UserDTO;
 import pharmacy.exception.ResourceConflictException;
 import pharmacy.model.auth.UserTokenState;
 import pharmacy.model.entity.User;
@@ -63,14 +63,14 @@ public class AuthenticationController {
 	}
 
 	@PostMapping("/signup")
-	public ResponseEntity<User> addUser(@RequestBody PatientDTO patientDTO, UriComponentsBuilder ucBuilder) {
+	public ResponseEntity<User> addUser(@RequestBody UserDTO userDTO, UriComponentsBuilder ucBuilder) {
 
-		User existUser = this.userService.findByUsername(patientDTO.getUsername());
+		User existUser = this.userService.findByUsername(userDTO.getUsername());
 		if (existUser != null) {
 			throw new ResourceConflictException(existUser.getId(), "Username already exists");
 		}
 
-		User user = this.userService.save(patientDTO);
+		User user = this.userService.save(userDTO);
 		try {
 			emailService.sendToken(user);
 		} catch (MailException e) {
@@ -78,7 +78,7 @@ public class AuthenticationController {
 		}
 
 		HttpHeaders headers = new HttpHeaders();
-		headers.setLocation(ucBuilder.path("/api/user/{userId}").buildAndExpand(user.getId()).toUri());
+		headers.setLocation(ucBuilder.path("/user/{userId}").buildAndExpand(user.getId()).toUri());
 		return new ResponseEntity<>(user, HttpStatus.CREATED);
 	}
 

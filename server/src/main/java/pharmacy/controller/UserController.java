@@ -1,55 +1,51 @@
 package pharmacy.controller;
 
-import java.security.Principal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
+import pharmacy.dto.UserDTO;
+import pharmacy.exception.ResourceConflictException;
 import pharmacy.model.entity.User;
 import pharmacy.service.UserService;
 
-// Primer kontrolera cijim metodama mogu pristupiti samo autorizovani korisnici
+import java.util.List;
+
 @RestController
-@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
 public class UserController {
 
 	@Autowired
 	private UserService userService;
 
-	// Za pristup ovoj metodi neophodno je da ulogovani korisnik ima ADMIN ulogu
-	// Ukoliko nema, server ce vratiti gresku 403 Forbidden
-	// Korisnik jeste autentifikovan, ali nije autorizovan da pristupi resursu
-	@GetMapping("/user/{userId}")
-//	@PreAuthorize("hasRole('ADMIN')")
+	@GetMapping("/{userId}")
 	public User loadById(@PathVariable Long userId) {
 		return this.userService.findById(userId);
 	}
-	
-	@GetMapping("/user/all")
-//	@PreAuthorize("hasRole('ADMIN')")
+
+	@GetMapping("/all")
 	public List<User> loadAll() {
 		return this.userService.findAll();
 	}
 
-//	 @PreAuthorize("isAuthenticated()")
-	@GetMapping("/whoami")
-	public User user(Principal user) {
-		System.out.println(">>>" + user.getName());
-		return this.userService.findByUsername(user.getName());
+	@PostMapping("/create")
+	@PreAuthorize("hasRole('SYSADMIN')")
+	public ResponseEntity<User> addUser(@RequestBody UserDTO userDTO, UriComponentsBuilder ucBuilder) {
+
+		User existUser = this.userService.findByUsername(userDTO.getUsername());
+		if (existUser != null) {
+			throw new ResourceConflictException(existUser.getId(), "Username already exists");
+		}
+
+		User user = new User();
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setLocation(ucBuilder.path("/user/{userId}").buildAndExpand(user.getId()).toUri());
+		return new ResponseEntity<>(user, HttpStatus.CREATED);
 	}
-	
-	@GetMapping("/foo")
-    public Map<String, String> getFoo() {
-        Map<String, String> fooObj = new HashMap<>();
-        fooObj.put("foo", "bar");
-        return fooObj;
-    }
+
 }
