@@ -1,6 +1,6 @@
 package pharmacy.service;
 
-import pharmacy.dto.PatientDTO;
+import pharmacy.dto.UserDTO;
 import pharmacy.model.auth.AdminRequest;
 import pharmacy.model.entity.User;
 
@@ -14,7 +14,9 @@ public interface UserService {
 
 	List<User> findAll();
 
-	User save(PatientDTO patientDTO);
+	User create(UserDTO userDTO);
+
+	User save(UserDTO userDTO);
 
 	User enable(User user);
 

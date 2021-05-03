@@ -5,10 +5,9 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import pharmacy.dto.PatientDTO;
+import pharmacy.dto.UserDTO;
 import pharmacy.model.auth.AdminRequest;
 import pharmacy.model.auth.Authority;
-import pharmacy.model.auth.UserRequest;
 import pharmacy.model.entity.Pharmacy;
 import pharmacy.model.entity.User;
 import pharmacy.repository.UserRepository;
@@ -76,17 +75,39 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public User save(PatientDTO patientDTO) {
+	public User create(UserDTO userDTO) {
 		User u = new User();
-		u.setUsername(patientDTO.getUsername());
-		u.setPassword(passwordEncoder.encode(patientDTO.getPassword()));
-		u.setFirstName(patientDTO.getFirstname());
-		u.setLastName(patientDTO.getLastname());
-		u.setEmail(patientDTO.getEmail());
-		u.setAddress(patientDTO.getAddress());
-		u.setCity(patientDTO.getCity());
-		u.setCountry(patientDTO.getCountry());
-		u.setPhone(patientDTO.getPhone());
+		u.setUsername(userDTO.getUsername());
+		u.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+		u.setFirstName(userDTO.getFirstname());
+		u.setLastName(userDTO.getLastname());
+		u.setEmail(userDTO.getEmail());
+		u.setEnabled(true);
+		u.setWork_role(userDTO.getRole());
+
+		if (userDTO.getRole().equals("SYSADMIN"))
+			u.setAuthorities(authService.findByName("ROLE_SYSADMIN"));
+		else if (userDTO.getRole().equals("SUPPLIER"))
+			u.setAuthorities(authService.findByName("ROLE_SUPPLIER"));
+		else if (userDTO.getRole().equals("DERMATOLOGIST"))
+			u.setAuthorities(authService.findByName("ROLE_DERMATOLOGIST"));
+
+		u = this.userRepository.save(u);
+		return u;
+	}
+
+	@Override
+	public User save(UserDTO userDTO) {
+		User u = new User();
+		u.setUsername(userDTO.getUsername());
+		u.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+		u.setFirstName(userDTO.getFirstname());
+		u.setLastName(userDTO.getLastname());
+		u.setEmail(userDTO.getEmail());
+		u.setAddress(userDTO.getAddress());
+		u.setCity(userDTO.getCity());
+		u.setCountry(userDTO.getCountry());
+		u.setPhone(userDTO.getPhone());
 		u.setEnabled(false);
 		u.setWork_role("PATIENT");
 
