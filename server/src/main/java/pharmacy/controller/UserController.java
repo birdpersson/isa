@@ -22,7 +22,7 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 
-	@GetMapping("/{userId}")
+	@GetMapping("/id/{userId}")
 	public User loadById(@PathVariable Long userId) {
 		return this.userService.findById(userId);
 	}
@@ -33,7 +33,7 @@ public class UserController {
 	}
 
 	@PostMapping("/create")
-	@PreAuthorize("hasRole('SYSADMIN')")
+	//@PreAuthorize("hasRole('SYSADMIN')")
 	public ResponseEntity<User> addUser(@RequestBody UserDTO userDTO, UriComponentsBuilder ucBuilder) {
 
 		User existUser = this.userService.findByUsername(userDTO.getUsername());
@@ -44,7 +44,7 @@ public class UserController {
 		User user = new User();
 
 		HttpHeaders headers = new HttpHeaders();
-		headers.setLocation(ucBuilder.path("/user/{userId}").buildAndExpand(user.getId()).toUri());
+		headers.setLocation(ucBuilder.path("/user/id/{userId}").buildAndExpand(user.getId()).toUri());
 		return new ResponseEntity<>(user, HttpStatus.CREATED);
 	}
 

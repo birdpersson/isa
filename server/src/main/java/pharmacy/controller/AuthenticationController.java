@@ -78,7 +78,7 @@ public class AuthenticationController {
 		}
 
 		HttpHeaders headers = new HttpHeaders();
-		headers.setLocation(ucBuilder.path("/user/{userId}").buildAndExpand(user.getId()).toUri());
+		headers.setLocation(ucBuilder.path("/user/id/{userId}").buildAndExpand(user.getId()).toUri());
 		return new ResponseEntity<>(user, HttpStatus.CREATED);
 	}
 

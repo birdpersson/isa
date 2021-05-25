@@ -69,7 +69,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint).and()
 
 				// svim korisnicima dopusti da pristupe putanjama /auth/**, (/h2-console/** ako se koristi H2 baza) i /api/foo
-				.authorizeRequests().antMatchers("/auth/**").permitAll().antMatchers("/h2-console/**").permitAll().antMatchers("/api/").permitAll()
+				.authorizeRequests()
+				.antMatchers("/auth/**").permitAll()
+				.antMatchers("/h2-console/**").permitAll()
+				.antMatchers("/api/").permitAll()
+				.antMatchers("/api/pharmacy/all/").permitAll()
+				.antMatchers("/api/medication/all/").permitAll()
 				
 				// za svaki drugi zahtev korisnik mora biti autentifikovan
 				.anyRequest().authenticated().and()
@@ -94,6 +99,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		web.ignoring().antMatchers(HttpMethod.POST, "/api/orders/**");
 		web.ignoring().antMatchers(HttpMethod.GET, "/","/webjars/**", "/*.html", "/favicon.ico", "/**/*.html",
 				"/**/*.css", "/**/*.js");
+		web.ignoring().antMatchers(HttpMethod.POST, "/api/pharmacy/all/");
+		web.ignoring().antMatchers(HttpMethod.POST, "/api/medication/all/");
 	}
 
 }
