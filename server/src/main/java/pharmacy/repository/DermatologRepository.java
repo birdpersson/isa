@@ -10,7 +10,7 @@ import pharmacy.model.entity.User;
 
 public interface DermatologRepository extends JpaRepository<User, Long>{
 
-	@Query(value="Select * from users where work_role='Dermatolog'",nativeQuery=true)
+	@Query(value="Select * from users where work_role='DERMATOLOGIST'",nativeQuery=true)
 	List<User> getAll();
 
 	
