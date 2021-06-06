@@ -10,9 +10,9 @@ import pharmacy.model.entity.User;
 
 public interface AdminRepository extends JpaRepository<User, Long> {
 	
-	@Query(value="select * from users where work_role = 'Admin'", nativeQuery= true)
+	@Query(value="select * from users where work_role = 'PHADMIN'", nativeQuery= true)
 	List<User> getAll();
 	
-	@Query(value="select * from users where dedicated_pharmacy_id is NULL and work_role='Admin'", nativeQuery= true)
+	@Query(value="select * from users where dedicated_pharmacy_id is NULL and work_role='PHADMIN'", nativeQuery= true)
 	List<User> getAdminsWithouthPharmacy();
 }

@@ -10,7 +10,7 @@ import pharmacy.model.entity.User;
 
 public interface PharmacistRepository extends JpaRepository<User, Long>{
 
-	@Query(value = "Select * from Users where work_role='Farmaceut'", nativeQuery=true)
+	@Query(value = "Select * from Users where work_role='PHARMACIST'", nativeQuery=true)
 	List<User> getAll();
 
 	
