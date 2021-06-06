@@ -26,6 +26,11 @@ public class UserController {
 	public User loadById(@PathVariable Long userId) {
 		return this.userService.findById(userId);
 	}
+	
+	@GetMapping("/username/{username}")
+	public User loadByUsername(@PathVariable String username) {
+		return this.userService.findByUsername(username);
+	}
 
 	@GetMapping("/all")
 	public List<User> loadAll() {
