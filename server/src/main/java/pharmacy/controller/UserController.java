@@ -52,5 +52,16 @@ public class UserController {
 		headers.setLocation(ucBuilder.path("/user/id/{userId}").buildAndExpand(user.getId()).toUri());
 		return new ResponseEntity<>(user, HttpStatus.CREATED);
 	}
+	
+	@PutMapping(value = "/update")
+	public void updateUser(@RequestBody UserDTO userDTO) {
+		User user = userService.findByUsername(userDTO.getEmail());
+		user.setFirstName(userDTO.getFirstname());
+		user.setLastName(userDTO.getLastname());
+		user.setAddress(userDTO.getAddress());
+		user.setCity(userDTO.getCity());
+		user.setPhone(userDTO.getPhone());
+		userService.save(user);
+	}
 
 }

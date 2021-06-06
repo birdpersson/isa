@@ -130,4 +130,28 @@ public class UserServiceImpl implements UserService {
 		return this.userRepository.getWorkRoleByUsername(username);
 	}
 
+	@Override
+	public User save(User user) {
+		// TODO Auto-generated method stub
+		User u = new User();
+		u.setUsername(user.getUsername());
+		u.setPassword(passwordEncoder.encode(user.getPassword()));
+		u.setFirstName(user.getFirstName());
+		u.setLastName(user.getLastName());
+		u.setEmail(user.getEmail());
+		u.setAddress(user.getAddress());
+		u.setCity(user.getCity());
+		u.setCountry(user.getCountry());
+		u.setPhone(user.getPhone());
+		u.setEnabled(false);
+		u.setWork_role("PATIENT");
+
+		List<Authority> auth = authService.findByName("ROLE_PATIENT");
+		u.setAuthorities(auth);
+
+		u = this.userRepository.save(u);
+		return u;
+	}
+
+
 }

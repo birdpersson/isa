@@ -4,7 +4,7 @@ INSERT INTO USERS( username, password, first_name, last_name, email, enabled, la
 --id: 2, user
 INSERT INTO USERS( username, password, first_name, last_name, email, enabled, last_password_reset_date, work_role) VALUES ( 'user1', '$2a$04$Vbug2lwwJGrvUXTj6z7ff.97IzVBkrJ1XfApfGNl.Z695zqcnPYra', 'NIkola', 'Nikolic', 'admin@example.com', true, '2017-10-01 18:57:58.508-07', 'PATIENT');
 --id: 3, superadmin
-INSERT INTO USERS( username, password, first_name, last_name, email, enabled, last_password_reset_date, work_role) VALUES ( 'superadmin','$2a$04$Vbug2lwwJGrvUXTj6z7ff.97IzVBkrJ1XfApfGNl.Z695zqcnPYra', 'Igor', 'Nikolic', 'superadmin@example.com', true, '2017-10-01 18:57:58.508-07','SYSADMIN');
+INSERT INTO USERS( username, password, first_name, last_name, email, enabled, last_password_reset_date, work_role) VALUES ( 'superadmin','$2a$10$tB/Q/cWMyZBWBYj3.4EyRO03VkhW0jRS0D7lhcp7qZRd1eJ./ZkKm', 'Igor', 'Nikolic', 'superadmin@example.com', true, '2017-10-01 18:57:58.508-07','SYSADMIN');
 --id: 4, dermatoog
 INSERT INTO USERS( username, password, first_name, last_name, email, enabled, last_password_reset_date, work_role) VALUES ( 'dermatolog', '$2a$04$Vbug2lwwJGrvUXTj6z7ff.97IzVBkrJ1XfApfGNl.Z695zqcnPYra', 'Miljana', 'Nikolic', 'dermatolog@example.com', true, '2017-10-01 18:57:58.508-07', 'DERMATOLOGIST');
 --id: 5, farmaceut
@@ -23,6 +23,8 @@ INSERT INTO USERS( username, password, first_name, last_name, email, enabled, la
 INSERT INTO USERS( username, password, first_name, last_name, email, enabled, last_password_reset_date, work_role) VALUES ( 'admin1', '$2a$04$Vbug2lwwJGrvUXTj6z7ff.97IzVBkrJ1XfApfGNl.Z695zqcnPYra', 'Milenko', 'Nikolic', 'admin2@example.com', true, '2017-10-01 18:57:58.508-07', 'PHADMIN');
 --id: 12, admin
 INSERT INTO USERS( username, password, first_name, last_name, email, enabled, last_password_reset_date, work_role) VALUES ( 'admin2', '$2a$04$Vbug2lwwJGrvUXTj6z7ff.97IzVBkrJ1XfApfGNl.Z695zqcnPYra', 'Kosta', 'Nikolic', 'admin3@example.com', true, '2017-10-01 18:57:58.508-07', 'PHADMIN');
+--id: 13, admin
+INSERT INTO USERS( username, password, first_name, last_name, email, enabled, last_password_reset_date, work_role) VALUES ( 'admin3', '$2a$10$3gW707DaC4OBv3HyGZQwxO8Cb99XTIewCbnzttFkwRWmDErd7ME5m', 'JOhn', 'Doe', 'admin33@example.com', true, '2017-10-01 18:57:58.508-07', 'PHADMIN');
 
 
 INSERT INTO PHARMACY (name, adress, city, rating) VALUES ('Apoteka dobro srce', 'Radnicka 23', 'Novi Sad', 5.0);

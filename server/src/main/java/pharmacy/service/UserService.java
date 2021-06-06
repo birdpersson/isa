@@ -17,6 +17,8 @@ public interface UserService {
 	User create(UserDTO userDTO);
 
 	User save(UserDTO userDTO);
+	
+	User save(User user);
 
 	User enable(User user);
 
